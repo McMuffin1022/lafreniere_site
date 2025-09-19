@@ -2,6 +2,9 @@
 {% extends "base.html" %}
 {% load static %}
 {% load l10n %}
+{% load tailwind_tags %}
+{% tailwind_css %}
+{% load static %}
 
 {% block title %}{{ property.title|default:"Détail propriété" }}{% endblock %}
 
