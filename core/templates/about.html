@@ -1,0 +1,97 @@
+<!-- path: core/templates/about.html -->
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}À propos — Simon Lafrenière{% endblock %}
+
+{% block content %}
+{% include "navbar_black.html" %}
+
+<section class="mx-auto max-w-7xl px-6 py-10 text-[#322D29]">
+
+  <!-- Bloc 1 : Image gauche / Texte droite -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-start">
+    <div>
+      <picture>
+        <source srcset="{% static 'assets/img/simon-standing.avif' %}" type="image/avif">
+        <source srcset="{% static 'assets/img/simon-standing.webp' %}" type="image/webp">
+        <img src="{% static 'assets/img/simon-standing.jpg' %}" alt="Simon Lafrenière"
+             class="w-full h-auto rounded-2xl object-cover shadow-sm">
+      </picture>
+    </div>
+    <div class="pt-2">
+      <div class="text-[22px] font-medium text-secondary hover:underline w-fit">À propos de</div>
+      <h1 class="text-[42px] leading-tight font-semibold mt-1">Simon Lafrenière</h1>
+      <p class="mt-3 text-[16px] leading-relaxed">
+        Avec plus de <strong>17 ans d’expérience</strong> et plus de <strong>1369 transactions complétées</strong>, j’ai appris qu’au
+        fond, mon métier ne consiste pas simplement à vendre des maisons. Ce qui compte réellement, c’est d’accompagner les gens,
+        de les écouter, de les rassurer et de les guider vers le prochain chapitre important de leur vie, en toute confiance.
+        Je saurai être votre courtier dans vos projets résidentiels, commerciaux et industriels.
+      </p>
+
+      <div class="mt-5 flex flex-wrap items-center gap-3">
+        <a href="/contact/"
+           class="inline-flex items-center justify-center rounded-full bg-[#005B9E] px-5 py-2.5 text-white text-[16px] font-semibold shadow-sm hover:opacity-95">
+          Contacter Simon
+        </a>
+        <a href="tel:+14186273333"
+           class="inline-flex items-center gap-2 rounded-full border border-[#005B9E] px-4 py-2.5 text-[16px] font-medium text-[#005B9E] hover:bg-[#005B9E]/5">
+          418-627-3333
+        </a>
+      </div>
+    </div>
+  </div>
+
+  <!-- Bloc 2 : Texte gauche / Image droite -->
+  <div class="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
+    <div>
+      <div class="text-[22px] font-medium text-secondary hover:underline w-fit">Ancré ici, proche de vous</div>
+      <h2 class="mt-1 text-[34px] font-semibold"> </h2>
+      <p class="mt-2 text-[16px] leading-relaxed">
+        Originaire d’ici, profondément attaché à ma région, je connais le marché de <strong>Québec, Lévis</strong> et
+        la grande région de la Capitale-Nationale comme mon propre quartier. Cette connaissance du terrain me permet
+        d’offrir des conseils précis, ancrés dans la réalité locale.
+      </p>
+    </div>
+    <div>
+      <picture>
+        <source srcset="{% static 'assets/img/kitchen.avif' %}" type="image/avif">
+        <source srcset="{% static 'assets/img/kitchen.webp' %}" type="image/webp">
+        <img src="{% static 'assets/img/kitchen.jpg' %}" alt="Cuisine moderne"
+             class="w-full h-auto rounded-2xl object-cover shadow-sm">
+      </picture>
+    </div>
+  </div>
+
+  <!-- Bloc 3 : Image gauche / Texte droite -->
+  <div class="mt-16 grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 items-center">
+    <div>
+      <picture>
+        <!-- <source srcset="{% static 'assets/img/house-front.avif' %}" type="image/avif">
+        <source srcset="{% static 'assets/img/house-front.webp' %}" type="image/webp"> -->
+        <img src="{% static 'assets/img/house-front.jpg' %}" alt="Maison à Québec"
+             class="w-full h-auto rounded-2xl object-cover shadow-sm">
+      </picture>
+    </div>
+    <div>
+      <div class="text-[22px] font-medium text-secondary hover:underline w-fit">L’immobilier,</div>
+      <h3 class="mt-1 text-[34px] leading-tight font-semibold">
+        une affaire de famille<br>et de partenariat
+      </h3>
+      <p class="mt-3 text-[16px] leading-relaxed">
+        J’ai grandi ici, je connais le marché! L’immobilier est devenu une histoire de famille. Avec
+        Danielle Girard, Olivier Ouellet-Bourgoin, Ludwig Treggett, Maxendre Garneau, Benjamin Legault ainsi
+        que nos adjointes, Magalie-Jade Larocque et Laurence Bouchard, nous formons un partenariat soudé.
+        Notre méthode de travail est similaire à celle d’une famille : nous communiquons, nous nous soutenons
+        et nous restons unis, ensemble, jusqu’au bout.
+      </p>
+    </div>
+  </div>
+</section>
+
+{% include 'partials/process_slider.html' %}
+{% include "partials/properties_grid_2x2.html" %}
+
+{% include "partials/newsletter_banner.html" %}
+{% include "footer.html" %}
+{% endblock %}

@@ -1,0 +1,180 @@
+{% load static %}
+
+<header id="site-header" class="sticky top-0 z-50 bg-white text-[#322D29]">
+  <div class="mx-auto max-w-7xl px-6">
+    <!-- Barre principale -->
+    <div id="nav-wrapper" class="flex items-center justify-between py-5 transition-all duration-300">
+
+      <!-- Logo -->
+      <a href="{% url 'home' %}" aria-label="Accueil Simon Lafrenière" class="shrink-0">
+        <img
+          id="nav-logo"
+          src="{% static 'assets/img/logonoir.svg' %}"
+          alt="Simon Lafrenière"
+          class="h-16 w-auto transition-transform duration-300 hover:scale-105"
+        />
+      </a>
+
+      <!-- Bloc droit desktop (icônes + liens) -->
+      <div class="hidden md:grid grid-rows-[auto_auto] gap-3 justify-items-end">
+        <!-- Icônes -->
+        <div class="flex items-center gap-5">
+          <a href="https://facebook.com" aria-label="Facebook" target="_blank" rel="noopener"
+             class="inline-flex h-9 w-9 items-center justify-center rounded-lg hover:bg-black/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#005B9E]">
+            {% include 'partials/icons/facebook.svg' %}
+          </a>
+        </div>
+
+        <!-- Liens -->
+        <nav aria-label="Navigation principale">
+          <ul class="flex items-center gap-9">
+            <li>
+              <a href="{% url 'properties_list' %}"
+                 class="block text-[18px] font-medium opacity-95 hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#005B9E] rounded-md">
+                Propriétés
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'invest' %}"
+                 class="block text-[18px] font-medium opacity-95 hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#005B9E] rounded-md">
+                Investir
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'collaborators' %}"
+                 class="block text-[18px] font-medium opacity-95 hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#005B9E] rounded-md">
+                Collaborateurs
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'about' %}"
+                 class="block text-[18px] font-medium opacity-95 hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#005B9E] rounded-md">
+                À propos
+              </a>
+            </li>
+            <li>
+              <a href="{% url 'contact' %}"
+                 class="block text-[18px] font-medium opacity-95 hover:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#005B9E] rounded-md">
+                Contact
+              </a>
+            </li>
+          </ul>
+        </nav>
+      </div>
+
+      <!-- Bouton mobile (hamburger) -->
+      <button id="mobile-open"
+              class="md:hidden inline-flex items-center justify-center rounded-xl p-3 ring-1 ring-black/10 hover:bg-black/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#005B9E]"
+              aria-expanded="false" aria-controls="mobile-menu" aria-label="Ouvrir le menu">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-6 w-6">
+          <path d="M3.75 6.75h16.5v1.5H3.75zm0 4.5h16.5v1.5H3.75zm0 4.5h16.5v1.5H3.75z" />
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- OVERLAY + PANNEAU MOBILE -->
+  <div id="mobile-menu" class="fixed inset-0 z-50 pointer-events-none opacity-0 transition-opacity duration-200">
+    <!-- Fond -->
+    <div id="mobile-backdrop" class="absolute inset-0 bg-black/60" aria-hidden="true"></div>
+
+    <!-- Panneau -->
+    <aside id="mobile-panel"
+           class="absolute left-0 top-0 h-full w-[92%] max-w-[420px] bg-white text-neutral-900 translate-x-[-100%] transition-transform duration-300 ease-out pointer-events-auto shadow-2xl">
+      <!-- Entête : logo + close stylé -->
+      <div class="flex items-center justify-between px-6 pt-6 pb-4">
+        <img src="{% static 'assets/img/logonoir.svg' %}" alt="Simon Lafrenière" class="h-9 w-auto">
+        <button id="mobile-close"
+                class="rounded-md border border-[#005B9E] text-[#005B9E] p-2 hover:bg-[#005B9E]/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#005B9E]"
+                aria-label="Fermer le menu">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="h-5 w-5">
+            <path d="M6.225 4.811 4.811 6.225 10.586 12l-5.775 5.775 1.414 1.414L12 13.414l5.775 5.775 1.414-1.414L13.414 12l5.775-5.775-1.414-1.414L12 10.586z"/>
+          </svg>
+        </button>
+      </div>
+
+      <!-- CTA (pilules) -->
+      <div class="px-6 space-y-4">
+        <a href="{% url 'properties_list' %}"
+           class="block w-full rounded-[999px] bg-[#005B9E] text-white text-[18px] font-semibold text-center py-4">
+          Propriétés
+        </a>
+        <a href="{% url 'contact' %}"
+           class="block w-full rounded-[999px] text-[#005B9E] ring-1 ring-[#005B9E] text-[18px] font-semibold text-center py-4">
+          Contact
+        </a>
+      </div>
+
+      <!-- Liens -->
+      <nav class="mt-6 px-6" aria-label="Navigation mobile">
+        <ul class="grid gap-6 text-[18px] font-medium">
+          <li><a href="{% url 'invest' %}" class="hover:text-[#005B9E]">Investir</a></li>
+          <li><a href="{% url 'about' %}" class="hover:text-[#005B9E]">À propos</a></li>
+          <li><a href="{% url 'collaborators' %}" class="hover:text-[#005B9E]">Collaborateurs</a></li>
+        </ul>
+      </nav>
+
+      <!-- Coordonnées -->
+      <div class="mt-8 px-6 space-y-5">
+        <div class="flex items-center gap-3 text-[18px]">
+          <span class="text-neutral-800">{% include 'partials/icons/mail.svg' %}</span>
+          <a href="mailto:slafreniere@viacapitale.com" class="hover:text-[#005B9E]">slafreniere@viacapitale.com</a>
+        </div>
+        <div class="flex items-center gap-3 text-[18px]">
+          <span class="text-neutral-800">{% include 'partials/icons/phone.svg' %}</span>
+          <a href="tel:+14186273333" class="hover:text-[#005B9E]">418-627-3333</a>
+        </div>
+        <div class="flex items-center gap-5 pt-1">
+          <a href="https://facebook.com" class="text-neutral-800 hover:text-[#005B9E]" aria-label="Facebook" target="_blank" rel="noopener">
+            {% include 'partials/icons/facebook.svg' %}
+          </a>
+          <a href="https://instagram.com" class="text-neutral-800 hover:text-[#005B9E]" aria-label="Instagram" target="_blank" rel="noopener">
+            {% include 'partials/icons/instagram.svg' %}
+          </a>
+        </div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- JS : shrink + mobile open/close -->
+  <script>
+    (function () {
+      // Shrink on scroll
+      const wrapper = document.getElementById('nav-wrapper');
+      const logo = document.getElementById('nav-logo');
+      function onScroll() {
+        const s = window.scrollY > 8;
+        if (s) { wrapper.classList.replace('py-5', 'py-3'); logo.classList.replace('h-16', 'h-12'); }
+        else   { wrapper.classList.replace('py-3', 'py-5'); logo.classList.replace('h-12', 'h-16'); }
+      }
+      document.addEventListener('DOMContentLoaded', onScroll);
+      window.addEventListener('scroll', onScroll, { passive: true });
+
+      // Mobile menu
+      const openBtn   = document.getElementById('mobile-open');
+      const closeBtn  = document.getElementById('mobile-close');
+      const overlay   = document.getElementById('mobile-menu');
+      const backdrop  = document.getElementById('mobile-backdrop');
+      const panel     = document.getElementById('mobile-panel');
+      const htmlEl    = document.documentElement;
+
+      function openMenu() {
+        overlay.classList.remove('opacity-0', 'pointer-events-none');
+        panel.classList.remove('translate-x-[-100%]');
+        openBtn?.setAttribute('aria-expanded', 'true');
+        htmlEl.classList.add('overflow-hidden');
+      }
+      function closeMenu() {
+        overlay.classList.add('opacity-0', 'pointer-events-none');
+        panel.classList.add('translate-x-[-100%]');
+        openBtn?.setAttribute('aria-expanded', 'false');
+        htmlEl.classList.remove('overflow-hidden');
+      }
+
+      openBtn?.addEventListener('click', openMenu);
+      closeBtn?.addEventListener('click', closeMenu);
+      backdrop?.addEventListener('click', closeMenu);
+      document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
+    })();
+  </script>
+</header>

@@ -1,0 +1,23 @@
+<!-- path: core/templates/partials/newsletter_banner.html -->
+<section class="w-full bg-[#005B9E]">
+  <div class="mx-auto max-w-7xl px-6">
+    <div class="h-[152px] flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
+      <!-- Titre + sous-titre -->
+      <div class="text-white">
+        <h2 class="text-[42px] font-bold leading-tight">Infolettre immobilière</h2>
+        <p class="mt-1 text-[18px] opacity-90">
+          Recevez les meilleurs offres directement dans votre boîte courriel.
+        </p>
+      </div>
+
+      <!-- Bouton -->
+      <a href="{% url 'contact' %}"
+         class="whitespace-nowrap inline-flex items-center rounded-full bg-[#EFE9E1] px-5 py-2.5
+                text-[18px] font-medium text-[#322D29] hover:opacity-95 focus-visible:outline-none
+                focus-visible:ring-2 focus-visible:ring-white"
+         aria-label="S'inscrire à l'infolettre">
+        Me tenir informé
+      </a>
+    </div>
+  </div>
+</section>

@@ -1,0 +1,256 @@
+<!-- path: core/templates/property_detail.html -->
+{% extends "base.html" %}
+{% load static %}
+{% load l10n %}
+
+{% block title %}{{ property.title|default:"Détail propriété" }}{% endblock %}
+
+{% block content %}
+{% include "navbar_black.html" %}
+
+<section class="py-10 text-[#322D29]">
+  <div class="mx-auto w-full max-w-7xl px-6 space-y-8">
+
+    <!-- Titre -->
+    <h1 class="text-[28px] md:text-[32px] font-semibold">
+      {{ property.title|default:"501, Rue Seigneuriale, G1B3A6" }}
+    </h1>
+
+    <!-- =========================================================
+         GALERIE PHOTOS — COLLAGE (desktop) + fallback mobile
+         ========================================================= -->
+    <div id="gallery"
+         data-images='[{% if images %}{% for img in images %}"{{ img.image.url }}"{% if not forloop.last %}, {% endif %}{% endfor %}{% else %}"https://picsum.photos/seed/d1/1280/720","https://picsum.photos/seed/d2/1280/720","https://picsum.photos/seed/d3/1280/720","https://picsum.photos/seed/d4/1280/720","https://picsum.photos/seed/d5/1280/720"{% endif %}]'>
+    </div>
+
+<!-- Collage desktop (corrigé) -->
+<!-- Collage desktop 50/50 : gauche 1 grande, droite 2×2 -->
+<div class="hidden lg:grid grid-cols-2 gap-3 h-[480px]">
+  <!-- Colonne gauche : grande image (prend toute la hauteur) -->
+  <button type="button"
+          class="relative overflow-hidden rounded-xl ring-1 ring-black/5 h-full group"
+          onclick="openLightbox(0)">
+    <img src="{% if images %}{{ images.0.image.url }}{% else %}https://picsum.photos/seed/d1/1600/1200{% endif %}"
+         alt="Photo 1"
+         class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-[1.02]">
+    <span onclick="event.stopPropagation(); prevLight();"
+          class="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-white/90 px-3 py-2 text-gray-900 shadow cursor-pointer">‹</span>
+    <span onclick="event.stopPropagation(); nextLight();"
+          class="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-white/90 px-3 py-2 text-gray-900 shadow cursor-pointer">›</span>
+  </button>
+
+  <!-- Colonne droite : grille 2×2 pour les 4 autres images -->
+  <div class="grid grid-cols-2 grid-rows-2 gap-3 h-full">
+    <button type="button" class="relative overflow-hidden rounded-xl ring-1 ring-black/5"
+            onclick="openLightbox(1)">
+      <img src="{% if images|length > 1 %}{{ images.1.image.url }}{% else %}https://picsum.photos/seed/d2/800/600{% endif %}"
+           alt="Photo 2" class="w-full h-full object-cover">
+    </button>
+
+    <button type="button" class="relative overflow-hidden rounded-xl ring-1 ring-black/5"
+            onclick="openLightbox(2)">
+      <img src="{% if images|length > 2 %}{{ images.2.image.url }}{% else %}https://picsum.photos/seed/d3/800/600{% endif %}"
+           alt="Photo 3" class="w-full h-full object-cover">
+    </button>
+
+    <button type="button" class="relative overflow-hidden rounded-xl ring-1 ring-black/5"
+            onclick="openLightbox(3)">
+      <img src="{% if images|length > 3 %}{{ images.3.image.url }}{% else %}https://picsum.photos/seed/d4/800/600{% endif %}"
+           alt="Photo 4" class="w-full h-full object-cover">
+    </button>
+
+    <button type="button" class="relative overflow-hidden rounded-xl ring-1 ring-black/5"
+            onclick="openLightbox(4)">
+      <img src="{% if images|length > 4 %}{{ images.4.image.url }}{% else %}https://picsum.photos/seed/d5/800/600{% endif %}"
+           alt="Photo 5" class="w-full h-full object-cover">
+    </button>
+  </div>
+</div>
+
+
+    <!-- Fallback Mobile/Tablet : 1 grande + miniatures -->
+    <div class="lg:hidden">
+      <div class="relative overflow-hidden rounded-xl ring-1 ring-black/5">
+        <img id="main-img"
+             src="{% if images %}{{ images.0.image.url }}{% else %}https://picsum.photos/seed/d1/1280/720{% endif %}"
+             alt="Photo principale"
+             class="w-full aspect-[16/9] object-cover cursor-zoom-in"
+             onclick="openLightbox(currentIdx)">
+        <button type="button" aria-label="Précédente"
+                onclick="prevLight()"
+                class="absolute left-2 top-1/2 -translate-y-1/2 rounded-full bg-white/90 px-3 py-2 text-gray-900 shadow">‹</button>
+        <button type="button" aria-label="Suivante"
+                onclick="nextLight()"
+                class="absolute right-2 top-1/2 -translate-y-1/2 rounded-full bg-white/90 px-3 py-2 text-gray-900 shadow">›</button>
+      </div>
+      <div id="thumb-bar" class="mt-3 flex items-center gap-2 overflow-x-auto pb-2">
+        {% for img in images %}
+          <img src="{{ img.image.url }}" data-index="{{ forloop.counter0 }}"
+               class="h-[64px] w-[96px] object-cover rounded-md ring-1 ring-black/5 cursor-pointer"
+               onclick="updateGallery({{ forloop.counter0 }})" alt="Vignette {{ forloop.counter }}">
+        {% empty %}
+          {% for i in "12345"|make_list %}
+            <img src="https://picsum.photos/seed/t{{ forloop.counter }}/400/300"
+                 data-index="{{ forloop.counter0 }}"
+                 class="h-[64px] w-[96px] object-cover rounded-md ring-1 ring-black/5 cursor-pointer"
+                 onclick="updateGallery({{ forloop.counter0 }})" alt="Vignette {{ forloop.counter }}">
+          {% endfor %}
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- =========================================================
+         Récap simple (prix + adresse + puces)
+         ========================================================= -->
+    <div class="space-y-2">
+      <p class="text-[22px] font-semibold">
+        {% if property.listing_type == 'rent' %}
+          {% if property.rent_price %}{{ property.rent_price|floatformat:0 }} $/mois{% else %}Loyer sur demande{% endif %}
+        {% else %}
+          {% if property.price and property.price|floatformat:0 != "0" %}{{ property.price|floatformat:0 }} $ CAD{% else %}Prix sur demande{% endif %}
+        {% endif %}
+      </p>
+      <p class="text-sm opacity-80">{{ property.address|default:"501, Rue Seigneuriale, G1B3A6" }}</p>
+      <div class="flex flex-wrap gap-3 text-sm pt-1">
+        {% if property.bedrooms %}<span class="rounded-full bg-gray-100 px-3 py-1">{{ property.bedrooms }} chambres</span>{% endif %}
+        {% if property.bathrooms %}<span class="rounded-full bg-gray-100 px-3 py-1">{{ property.bathrooms }} salles de bain</span>{% endif %}
+        {% if property.surface %}<span class="rounded-full bg-gray-100 px-3 py-1">{{ property.surface }} m² habitables</span>{% endif %}
+        {% if property.year_built %}<span class="rounded-full bg-gray-100 px-3 py-1">Construit en {{ property.year_built }}</span>{% endif %}
+      </div>
+      <p class="text-sm leading-relaxed pt-2">
+        {{ property.description|default:"IMPECCABLE, coquette maison 1 chambre à l’étage, 2 au sous-sol, située dans un secteur familial près de tous les services..." }}
+      </p>
+    </div>
+
+    <!-- =========================================================
+         Détails des pièces (tableau)
+         ========================================================= -->
+    <div>
+      <h2 class="text-[22px] font-medium text-secondary hover:underline w-fit">Détails des pièces</h2>
+      <div class="mt-3 overflow-x-auto rounded-lg ring-1 ring-black/5">
+        <table class="min-w-full text-sm">
+          <thead class="bg-gray-50 text-left">
+            <tr>
+              <th class="px-4 py-2">Niveau</th>
+              <th class="px-4 py-2">Pièce</th>
+              <th class="px-4 py-2">Dimensions</th>
+              <th class="px-4 py-2">Couvre-planchers</th>
+            </tr>
+          </thead>
+          <tbody class="divide-y">
+            <tr><td class="px-4 py-2">RDC</td><td class="px-4 py-2">Salon</td><td class="px-4 py-2">14.2 × 11.8</td><td class="px-4 py-2">Plancher flottant</td></tr>
+            <tr><td class="px-4 py-2">RDC</td><td class="px-4 py-2">Salle à manger</td><td class="px-4 py-2">11.0 × 10.4</td><td class="px-4 py-2">Plancher flottant</td></tr>
+            <tr><td class="px-4 py-2">RDC</td><td class="px-4 py-2">Cuisine</td><td class="px-4 py-2">8.7 × 7.1</td><td class="px-4 py-2">Céramique</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- =========================================================
+         Description & Inclus (2 colonnes)
+         ========================================================= -->
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <div>
+        <h2 class="text-[22px] font-medium text-secondary hover:underline w-fit mb-1">Description</h2>
+        <p class="text-[15px]">
+          {{ property.description|default:"Maison clé en main, cour intime, terrain de plus de 4800 pi²..." }}
+        </p>
+      </div>
+      <div>
+        <h2 class="text-[22px] font-medium text-secondary hover:underline w-fit mb-1">Inclus</h2>
+        <p class="text-[15px] opacity-90">
+          {{ property.included|default:"Luminaires, échangeur d’air, plaque chauffante, lave-vaisselle, thermopompe murale..." }}
+        </p>
+      </div>
+    </div>
+
+    <!-- NOTE: Localisation & Demande de visite retirés comme demandé -->
+
+  </div>
+</section>
+
+{% include "footer.html" %}
+<!-- =========================================================
+     LIGHTBOX
+     ========================================================= -->
+<div id="lightbox" class="fixed inset-0 z-50 hidden items-center justify-center bg-white">
+  <button class="absolute top-3 right-4 text-4xl text-[#005B9E]" aria-label="Fermer" onclick="closeLightbox()">&times;</button>
+  <button class="absolute left-3 top-1/2 -translate-y-1/2 rounded-full bg-white px-3 py-2 text-[#005B9E]" onclick="prevLight()">‹</button>
+  <img id="lightbox-img" src="" alt="" class="max-h-[80vh] max-w-[92vw] rounded-xl object-contain shadow cursor-pointer" onclick="nextLight()">
+  <button class="absolute right-3 top-1/2 -translate-y-1/2 rounded-full bg-white px-3 py-2 text-[#005B9E]" onclick="nextLight()">›</button>
+  <div class="absolute bottom-4 left-1/2 -translate-x-1/2 text-sm text-[#005B9E]">
+    <span id="lightbox-counter" class="font-semibold"></span>
+  </div>
+</div>
+
+<!-- =========================================================
+     JS galerie + lightbox
+     ========================================================= -->
+<script>
+  // images depuis le data-attr
+  const galleryEl = document.getElementById('gallery');
+  const images = JSON.parse(galleryEl?.dataset?.images || '[]');
+  let currentIdx = 0;
+
+  // DOM mobile
+  const mainImg  = document.getElementById('main-img');
+  const thumbBar = document.getElementById('thumb-bar');
+
+  // ----- Mobile / Tablet : galerie simple -----
+  function updateGallery(i){
+    if (!images.length || !mainImg) return;
+    currentIdx = (i + images.length) % images.length;
+    mainImg.src = images[currentIdx];
+
+    // highlight miniature active
+    if (thumbBar){
+      [...thumbBar.querySelectorAll('img')].forEach(t => t.classList.remove('ring-2','ring-[#22c67d]'));
+      const active = thumbBar.querySelector(`img[data-index="${currentIdx}"]`);
+      if (active){
+        active.classList.add('ring-2','ring-[#22c67d]');
+        const center = active.offsetLeft + active.clientWidth/2 - thumbBar.clientWidth/2;
+        thumbBar.scrollTo({ left: Math.max(0, center), behavior: 'smooth' });
+      }
+    }
+  }
+  updateGallery(0);
+
+  // ----- Lightbox -----
+  const lb      = document.getElementById('lightbox');
+  const lbImg   = document.getElementById('lightbox-img');
+  const lbCount = document.getElementById('lightbox-counter');
+
+  function openLightbox(i){
+    if (!images.length) return;
+    currentIdx = Math.min(Math.max(i,0), images.length-1);
+    lbImg.src   = images[currentIdx];
+    lbCount.textContent = (currentIdx+1) + ' / ' + images.length;
+    lb.classList.remove('hidden'); lb.classList.add('flex');
+  }
+  function closeLightbox(){ lb.classList.add('hidden'); lb.classList.remove('flex'); }
+  function prevLight(){
+    if (!images.length) return;
+    currentIdx = (currentIdx - 1 + images.length) % images.length;
+    lbImg.src = images[currentIdx];
+    lbCount.textContent = (currentIdx+1) + ' / ' + images.length;
+  }
+  function nextLight(){
+    if (!images.length) return;
+    currentIdx = (currentIdx + 1) % images.length;
+    lbImg.src = images[currentIdx];
+    lbCount.textContent = (currentIdx+1) + ' / ' + images.length;
+  }
+
+  // flèches de la grande image (fallback mobile)
+  function prevLightFallback(){ prevLight(); }
+  function nextLightFallback(){ nextLight(); }
+
+  // clavier dans la lightbox
+  document.addEventListener('keydown', (e)=>{
+    if (lb.classList.contains('hidden')) return;
+    if (e.key === 'ArrowLeft')  prevLight();
+    if (e.key === 'ArrowRight') nextLight();
+    if (e.key === 'Escape')     closeLightbox();
+  });
+</script>
+{% endblock %}

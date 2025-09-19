@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Contact — Simon Lafrenière{% endblock %}
+
+{% block content %}
+{% include "navbar_black.html" %}
+
+<section class="mx-auto max-w-7xl px-6 py-10 text-[#322D29]">
+  <!-- Titre principal -->
+  <h1 class="text-[42px] font-semibold text-center">
+    Parlons de votre projet immobilier
+  </h1>
+
+  <!-- Intro (centrée, texte aligné à gauche) -->
+  <div class="mx-auto mt-4 max-w-3xl space-y-4 text-[16px] leading-relaxed opacity-90">
+    <p>
+      L'idée de vendre votre propriété vous préoccupe? Laissez-moi vous accompagner avec mes 17 années d'expérience
+      dans ce processus. J’ai un plan stratégique solide qui saura correspondre à vos besoins afin de maximiser votre mise
+      en marché pour aller chercher la meilleure valeur de celle-ci.
+    </p>
+    <p>
+      Nous travaillons avec une équipe de marketing dynamique, des photographes et vidéastes professionnels. Mon
+      expertise en négociation ira chercher le meilleur prix pour votre demeure dans le marché actuel. Je vous invite à me
+      contacter en tout temps pour une rencontre informative pour votre projet de mise en marché. Au plaisir de vous
+      accompagner dans cette étape importante!
+    </p>
+  </div>
+
+  <!-- Grille carte + formulaire -->
+  <div class="mt-16 grid grid-cols-1 gap-10 md:grid-cols-2 md:items-start">
+    <!-- Carte (image) -->
+    <div class="flex justify-center md:justify-start">
+      <picture>
+        <source srcset="{% static 'assets/img/simon-business-card.avif' %}" type="image/avif">
+        <source srcset="{% static 'assets/img/simon-business-card.webp' %}" type="image/webp">
+        <img
+          src="{% static 'assets/img/simon-business-card.jpg' %}"
+          alt="Carte d'affaires — Simon Lafrenière"
+          class="w-full max-w-xl rounded-2xl border border-black/10 shadow-sm object-contain"
+        >
+      </picture>
+    </div>
+
+    <!-- Formulaire : sans carte autour (fidèle à la maquette) -->
+    <div>
+      <!-- Titre 42px + petit sous-texte -->
+      <h2 class="text-[42px] font-semibold">Contactez-nous</h2>
+      <p class="mt-2 text-[15px] opacity-90">
+        Nous sommes là pour répondre à vos questions!
+      </p>
+
+      <form id="contact-form" action="{% url 'contact_submit' %}" method="post" class="mt-6 space-y-4" novalidate>
+        {% csrf_token %}
+        <div>
+          <label for="id_name" class="sr-only">Nom</label>
+          <input id="id_name" name="name" type="text" required autocomplete="name"
+                 class="w-full rounded-lg border border-black/10 bg-white px-4 py-3 text-[16px] outline-none focus:ring-2 focus:ring-secondary"
+                 placeholder="votre nom">
+        </div>
+        <div>
+          <label for="id_email" class="sr-only">Courriel</label>
+          <input id="id_email" name="email" type="email" required autocomplete="email"
+                 class="w-full rounded-lg border border-black/10 bg-white px-4 py-3 text-[16px] outline-none focus:ring-2 focus:ring-secondary"
+                 placeholder="votre courriel">
+        </div>
+        <div>
+          <label for="id_phone" class="sr-only">Numéro de téléphone</label>
+          <input id="id_phone" name="phone" type="tel" inputmode="tel" autocomplete="tel"
+                 class="w-full rounded-lg border border-black/10 bg-white px-4 py-3 text-[16px] outline-none focus:ring-2 focus:ring-secondary"
+                 placeholder="votre numéro de téléphone">
+        </div>
+        <div>
+          <label for="id_message" class="sr-only">Message</label>
+          <textarea id="id_message" name="message" rows="5" required
+                    class="w-full rounded-lg border border-black/10 bg-white px-4 py-3 text-[16px] outline-none focus:ring-2 focus:ring-secondary"
+                    placeholder="votre message"></textarea>
+        </div>
+
+        <button id="contact-submit" type="submit"
+                class="inline-flex w-full items-center justify-center rounded-full bg-[#005B9E] px-6 py-3 text-[16px] font-semibold text-white hover:opacity-95 disabled:opacity-60">
+          <span class="inline-flex items-center gap-2">
+            <svg id="contact-spinner" class="hidden h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" d="M4 12a8 8 0 018-8v4" stroke="currentColor" stroke-width="4" stroke-linecap="round"></path>
+            </svg>
+            Envoyer
+          </span>
+        </button>
+
+        <div class="text-center pt-3 text-[16px]">
+          ou téléphonez au
+          <a href="tel:+14186273333" class="font-bold text-[#005B9E]">418-627-3333</a>
+        </div>
+      </form>
+    </div>
+  </div>
+</section>
+
+{% include "partials/newsletter_banner.html" %}
+{% include "footer.html" %}
+
+<script>
+  (function () {
+    const form    = document.getElementById('contact-form');
+    const btn     = document.getElementById('contact-submit');
+    const spinner = document.getElementById('contact-spinner');
+
+    // petit toast
+    const toast   = document.createElement('div');
+    toast.id = 'contact-toast';
+    toast.className = 'pointer-events-none fixed bottom-6 right-6 z-50 hidden rounded-lg bg-black/80 px-4 py-3 text-white shadow-lg';
+    toast.innerHTML = '<span id="contact-toast-text" class="text-sm"></span>';
+    document.body.appendChild(toast);
+    const toastT  = document.getElementById('contact-toast-text');
+
+    function showToast(msg) {
+      toastT.textContent = msg;
+      toast.classList.remove('hidden');
+      setTimeout(() => toast.classList.add('hidden'), 2800);
+    }
+
+    function getCsrf() {
+      const name = 'csrftoken=';
+      const parts = document.cookie.split(';');
+      for (let c of parts) {
+        c = c.trim();
+        if (c.startsWith(name)) return decodeURIComponent(c.substring(name.length));
+      }
+      return '';
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      btn.disabled = true;
+      spinner.classList.remove('hidden');
+
+      const data = new FormData(form);
+      try {
+        const res = await fetch(form.action, {
+          method: 'POST',
+          headers: {'X-CSRFToken': getCsrf(), 'X-Requested-With': 'XMLHttpRequest'},
+          body: data
+        });
+        const json = await res.json();
+        if (json.success) {
+          form.reset();
+          showToast('Merci! Votre message a été envoyé.');
+        } else {
+          showToast(json.error || "Une erreur est survenue.");
+        }
+      } catch (_) {
+        showToast("Impossible d'envoyer le message pour le moment.");
+      } finally {
+        btn.disabled = false;
+        spinner.classList.add('hidden');
+      }
+    });
+  })();
+</script>
+{% endblock %}

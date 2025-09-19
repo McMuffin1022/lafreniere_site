@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+{% load static %}
+{% load humanize %}
+
+{% block title %}Propriétés à vendre{% endblock %}
+
+{% block content %}
+{% include "navbar_black.html" %}
+
+<section class="mx-auto max-w-7xl px-6 py-10 text-[#322D29]">
+  <div class="flex items-end justify-between gap-4">
+    <h1 class="text-[42px] font-semibold">Propriétés à vendre</h1>
+
+    {% if paginator %}
+    <div class="text-sm opacity-70">
+      {{ page_obj.start_index }}–{{ page_obj.end_index }} sur {{ paginator.count }} résultats
+    </div>
+    {% endif %}
+  </div>
+
+  <!-- Grille des propriétés -->
+  <div class="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+    {% for l in listings %}
+      <article class="group relative overflow-hidden rounded-2xl bg-white shadow-[0_6px_24px_rgba(0,0,0,0.08)] ring-1 ring-black/5">
+        <a href="{% url 'property_detail' slug=l.slug %}" class="block">
+          <div class="relative">
+            {% with p=l.photos.first %}
+              {% if p %}
+                <img
+                  src="{{ p.url }}"
+                  alt="{{ l.adresse|default:'Propriété' }}"
+                  class="h-[180px] w-full object-cover sm:h-[200px] lg:h-[180px] transition-transform duration-300 group-hover:scale-[1.02]" />
+              {% else %}
+                <img
+                  src="{% static 'assets/placeholder.png' %}"
+                  alt="{{ l.adresse|default:'Propriété' }}"
+                  class="h-[180px] w-full object-cover sm:h-[200px] lg:h-[180px]" />
+              {% endif %}
+            {% endwith %}
+
+            {# Ruban rouge "VENDU" (seulement pour les 3 derniers jours — la vue filtre déjà) #}
+            {% if l.status == 'SOLD' %}
+              <div class="pointer-events-none absolute -left-10 top-4 w-[170px] -rotate-45">
+                <div class="bg-red-600 text-white text-xs font-semibold tracking-widest text-center py-1 shadow-md">
+                  VENDU
+                </div>
+              </div>
+            {% endif %}
+          </div>
+        </a>
+
+        <div class="p-4">
+          <a href="{% url 'property_detail' slug=l.slug %}"
+             class="block text-[14px] leading-snug hover:underline">
+            {{ l.adresse }}
+          </a>
+
+          <div class="mt-1 text-[13px] opacity-60">Résidentiel</div>
+
+          <div class="mt-1 text-[14px] font-semibold">
+            {% if l.prix %}
+              {{ l.prix|intcomma }} $ CAD
+            {% else %}
+              0$ CAD
+            {% endif %}
+          </div>
+        </div>
+      </article>
+    {% empty %}
+      <p class="col-span-full text-sm opacity-70">Aucune propriété trouvée pour le moment.</p>
+    {% endfor %}
+  </div>
+
+  <!-- Pagination -->
+  {% if paginator and paginator.num_pages > 1 %}
+    <nav class="mt-10 flex items-center justify-center" aria-label="Pagination">
+      <ul class="inline-flex items-center gap-1">
+        <!-- Précédent -->
+        {% if page_obj.has_previous %}
+          <li>
+            <a class="rounded-full border px-3 py-2 text-sm hover:bg-gray-50"
+               href="?{% if request.GET %}{{ request.GET.urlencode }}&{% endif %}page={{ page_obj.previous_page_number }}"
+               aria-label="Page précédente">‹</a>
+          </li>
+        {% else %}
+          <li>
+            <span class="rounded-full border px-3 py-2 text-sm opacity-40 cursor-not-allowed">‹</span>
+          </li>
+        {% endif %}
+
+        {# Fenêtre centrée autour de la page courante #}
+        {% for p in paginator.page_range %}
+          {% if p == 1 or p == paginator.num_pages or p >= page_obj.number|add:'-2' and p <= page_obj.number|add:'2' %}
+            {% if p == page_obj.number %}
+              <li>
+                <span class="rounded-full bg-secondary text-white px-3 py-2 text-sm">{{ p }}</span>
+              </li>
+            {% else %}
+              <li>
+                <a class="rounded-full border px-3 py-2 text-sm hover:bg-gray-50"
+                   href="?{% if request.GET %}{{ request.GET.urlencode }}&{% endif %}page={{ p }}">{{ p }}</a>
+              </li>
+            {% endif %}
+          {% elif p == 2 and page_obj.number > 4 %}
+            <li><span class="px-2 text-sm opacity-50">…</span></li>
+          {% elif p == paginator.num_pages|add:'-1' and page_obj.number < paginator.num_pages|add:'-3' %}
+            <li><span class="px-2 text-sm opacity-50">…</span></li>
+          {% endif %}
+        {% endfor %}
+
+        <!-- Suivant -->
+        {% if page_obj.has_next %}
+          <li>
+            <a class="rounded-full border px-3 py-2 text-sm hover:bg-gray-50"
+               href="?{% if request.GET %}{{ request.GET.urlencode }}&{% endif %}page={{ page_obj.next_page_number }}"
+               aria-label="Page suivante">›</a>
+          </li>
+        {% else %}
+          <li>
+            <span class="rounded-full border px-3 py-2 text-sm opacity-40 cursor-not-allowed">›</span>
+          </li>
+        {% endif %}
+      </ul>
+    </nav>
+  {% endif %}
+</section>
+
+{% include "partials/newsletter_banner.html" %}
+{% include "footer.html" %}
+{% endblock %}

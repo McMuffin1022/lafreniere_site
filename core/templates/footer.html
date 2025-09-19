@@ -1,0 +1,53 @@
+<!-- path: core/templates/partials/footer.html -->
+{% load static %}
+
+<footer class="w-full bg-[#EEF2F6] text-[#322D29]">
+  <div class="mx-auto max-w-7xl px-6 py-8">
+    <!-- Haut : logo / liens / sociaux -->
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+      <!-- Logo -->
+      <a href="/" aria-label="Accueil Simon Lafrenière" class="shrink-0">
+       <img 
+        id="nav-logo" 
+        src="{% static 'assets/img/logonoir.svg' %}" 
+        alt="Simon Lafrenière" 
+        class="h-10 w-auto transition-transform duration-300 transform hover:scale-105"
+      />
+      </a>
+
+      <!-- Liens -->
+      <nav aria-label="Liens du pied de page">
+        <ul class="flex flex-col md:flex-row gap-4 md:gap-8 text-[18px] font-medium">
+          <li><a href="#acheter" class="hover:underline">Acheter</a></li>
+          <li><a href="#vendre" class="hover:underline">Vendre</a></li>
+          <li><a href="#apropos" class="hover:underline">À propos</a></li>
+          <li><a href="#contact" class="hover:underline">Contact</a></li>
+          <li><a href="#collaborateurs" class="hover:underline">Collaborateurs</a></li>
+          <li><a href="/politique-de-confidentialite/" class="hover:underline">Politique de confidentialité</a></li>
+        </ul>
+      </nav>
+
+      <!-- Réseaux sociaux -->
+      <div class="flex items-center gap-4 md:gap-6 text-[#322D29]">
+        <a href="https://facebook.com" class="inline-flex h-9 w-9 items-center justify-center rounded-lg hover:bg-black/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary" aria-label="Facebook">
+          {% include 'partials/icons/facebook.svg' %}
+        </a>
+        <a href="https://instagram.com" class="inline-flex h-9 w-9 items-center justify-center rounded-lg hover:bg:black/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-secondary" aria-label="Instagram">
+          {% include 'partials/icons/instagram.svg' %}
+        </a>
+      </div>
+    </div>
+
+    <!-- Logos partenaires -->
+    <div class="mt-8 flex flex-col items-center gap-4">
+      <div class="flex items-center gap-4">
+        <img src="{% static 'assets/img/viacapital.svg' %}" alt="Via Capitale - Méritas" class="h-14 w-auto object-contain">
+      </div>
+
+      <!-- Crédit -->
+      <p class="mt-4 text-center text-[16px] md:text-[18px] text-[#322D29]/80">
+        Conception par nomades marketing
+      </p>
+    </div>
+  </div>
+</footer>

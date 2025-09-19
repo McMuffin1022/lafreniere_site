@@ -1,0 +1,85 @@
+<!-- path: core/templates/partials/home_about_service.html -->
+{% load static %}
+
+<section class="mx-auto max-w-7xl px-6">
+  <!-- Bloc principal (fond beige + portrait) -->
+<div class="relative rounded-2xl bg-[#EFE9E1] px-8 py-12 md:px-16 md:py-16 overflow-hidden">
+  <div class="grid grid-cols-1 md:grid-cols-2 items-center gap-8 md:gap-12">
+    
+    <!-- Texte -->
+    <div class="space-y-4 order-1 md:order-none">
+      <h2 class="text-[36px] md:text-[44px] font-bold text-[#322D29] leading-tight">
+        À votre service depuis 2008
+      </h2>
+      <p class="text-[16px] md:text-[18px] leading-relaxed text-[#322D29]/80">
+        Avec nous, le service clientèle est au cœur de nos priorités.
+        Chaque projet devient une collaboration basée sur confiance et proximité.
+      </p>
+
+      <!-- CTAs -->
+      <div class="mt-6 flex flex-wrap items-center gap-4">
+        <a href="#contact"
+           class="inline-flex items-center justify-center rounded-full bg-[#005B9E] px-6 py-3 text-white text-[16px] font-semibold shadow-sm hover:opacity-90 transition">
+          Contactez-nous
+        </a>
+
+        <a href="tel:+14186273333"
+           class="inline-flex items-center gap-2 rounded-full border border-[#005B9E] px-6 py-3 text-[16px] font-medium text-[#005B9E] hover:bg-[#005B9E]/5 transition">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
+               class="h-5 w-5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M22 16.92v2a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.1 4.18 2 2 0 0 1 4.11 2h2a2 2 0 0 1 2 1.72c.12.9.32 1.77.6 2.6a2 2 0 0 1-.45 2.11L7.09 9.91a16 16 0 0 0 6 6l1.48-1.18a2 2 0 0 1 2.11-.45c.83.28 1.7.48 2.6.6A2 2 0 0 1 22 16.92z"/>
+          </svg>
+          418-627-3333
+        </a>
+      </div>
+    </div>
+
+    <!-- Portrait coupé -->
+<div class="absolute -bottom-6 right-6 md:right-12">
+  <img src="{% static 'assets/img/simon-portrait.png' %}"
+       alt="Simon Lafrenière"
+       class="h-[400px] md:h-[480px] object-cover object-bottom translate-y-15">
+</div>
+  </div>
+</div>
+
+  <!-- Témoignages -->
+  <div class="mt-6 grid grid-cols-1 md:grid-cols-3 gap-4">
+    <!-- Card 1 -->
+    <article class="rounded-xl border border-black/10 bg-white p-5 text-[#322D29]">
+      <p class="text-[16px] leading-relaxed">
+        « Entièrement satisfaite de mon expérience avec mon courtier Simon Lafrenière…
+        Simon a su faire preuve d’un grand professionnalisme en m’offrant tout le soutien
+        et conseils nécessaires. »
+      </p>
+      <div class="mt-4 flex items-center justify-between text-[14px] font-semibold">
+        <span>Marianne</span>
+        <span class="font-medium text-black/60">14 juin 2025</span>
+      </div>
+    </article>
+
+    <!-- Card 2 -->
+    <article class="rounded-xl border border-black/10 bg-white p-5 text-[#322D29]">
+      <p class="text-[16px] leading-relaxed">
+        « Simon nous a très bien accompagnés dans notre recherche particulière,
+        une maison bi-génération. Merci Simon! »
+      </p>
+      <div class="mt-4 flex items-center justify-between text-[14px] font-semibold">
+        <span>Isabelle</span>
+        <span class="font-medium text-black/60">26 mai 2025</span>
+      </div>
+    </article>
+
+    <!-- Card 3 -->
+    <article class="rounded-xl border border-black/10 bg-white p-5 text-[#322D29]">
+      <p class="text-[16px] leading-relaxed">
+        « Simon a été très franc, honnête vis-à-vis nos besoins en terme de maison ainsi que
+        vis-à-vis la qualité lors de nos visites. Très présent et professionnel dans nos démarches. »
+      </p>
+      <div class="mt-4 flex items-center justify-between text-[14px] font-semibold">
+        <span>Jonh</span>
+        <span class="font-medium text-black/60">30 mars 2025</span>
+      </div>
+    </article>
+  </div>
+</section>

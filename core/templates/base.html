@@ -1,0 +1,78 @@
+{% load tailwind_tags %}
+{% tailwind_css %}
+{% load static %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <title>{% block title %}Charles-Alexandre Jean{% endblock %}</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <!-- Favicons -->
+  <link rel="apple-touch-icon" sizes="180x180" href="{% static 'assets/apple-touch-icon.png' %}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'assets/favicon-32x32.png' %}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{% static 'assets/favicon-16x16.png' %}">
+  <link rel="manifest" href="{% static 'assets/site.webmanifest' %}">
+  <link rel="shortcut icon" href="{% static 'assets/favicon.ico' %}">
+
+  <!-- Google Fonts + Tailwind -->
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap" rel="stylesheet" />  
+  <link href="{% static 'css/dist/styles.css' %}?v=20250826" rel="stylesheet" />
+</head>
+<body class="font-body text-gray-800 flex flex-col min-h-screen">
+
+  <!-- Contenu spécifique à chaque page -->
+  <main class="flex-grow">
+    {% block content %}{% endblock %}
+  </main>
+
+  
+  {# TIDIO — Live chat #}
+{% if TIDIO_PUBLIC_KEY %}
+  <script>
+    (function (key) {
+      if (window.__tidioLoaded) return;            // évite double chargement
+      window.__tidioLoaded = true;
+      var s = document.createElement("script");
+      s.src = "https://code.tidio.co/" + key + ".js";
+      s.async = true;
+      document.body.appendChild(s);
+
+      // Petites améliorations une fois prêt
+      document.addEventListener("tidioChat-ready", function () {
+        try {
+          // Langue FR (si activée côté Tidio, c'est auto, sinon on force)
+          if (window.tidioChatApi?.setLanguage) {
+            window.tidioChatApi.setLanguage("fr");
+          }
+
+          // Affiche après un court délai, bulle fermée par défaut
+          if (window.tidioChatApi?.hide && window.tidioChatApi?.show) {
+            window.tidioChatApi.hide();
+            setTimeout(function () {
+              window.tidioChatApi.show();
+            }, 1200);
+          }
+        } catch (e) {}
+      });
+    })("{{ TIDIO_PUBLIC_KEY }}");
+  </script>
+{% endif %}
+<style>
+  /* Ajuste la position/marges de l'iframe Tidio si nécessaire */
+  .tidio-chat-iframe {
+    right: 16px !important;
+    bottom: 16px !important;
+    z-index: 999999 !important;
+  }
+  /* Sur mobile, remonte un peu si tu as un footer flottant */
+  @media (max-width: 767px) {
+    .tidio-chat-iframe {
+      bottom: 12px !important;
+      right: 12px !important;
+    }
+  }
+</style>
+
+
+</body>
+</html>

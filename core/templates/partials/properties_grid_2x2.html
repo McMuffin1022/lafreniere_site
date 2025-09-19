@@ -1,0 +1,60 @@
+<!-- path: core/templates/partials/properties_grid_2x2.html -->
+<section class="mx-auto w-full max-w-7xl px-6 py-8 text-[#322D29]">
+  <!-- Titre + sous-titre -->
+  <div class="mb-4">
+    <h2 class="text-[42px] font-semibold leading-tight">Nos propriétés</h2>
+    <p class="mt-1 text-[16px]">
+      Disponibles à
+      <a href="/properties/?city=Québec" class="underline text-[#005B9E] hover:opacity-90">Québec</a>
+    </p>
+  </div>
+
+  <!-- Grille -->
+  <div id="props-grid" class="grid grid-cols-1 gap-8 md:grid-cols-2"></div>
+</section>
+
+<script>
+  (function () {
+    const GRID = document.getElementById('props-grid');
+    const API  = "https://lpsep9.n0c.world/centris/get-listings.php";
+
+    function priceLabel(p) {
+      const n = parseInt(p || 0, 10);
+      if (!isFinite(n) || n <= 0) return "0$ CAD";
+      return n.toLocaleString('fr-CA') + " $ CAD";
+    }
+
+    function cardTemplate(p) {
+      const photo = (p.photos && p.photos.split(',')[0]) || "https://via.placeholder.com/800x450?text=Propriété";
+      const address = [p.adresse, p.ville, p.code_postal].filter(Boolean).join(", ");
+
+      return `
+      <article class="group cursor-pointer" onclick="window.location.href='/properties?id=${p.id}'">
+        <div class="overflow-hidden rounded-xl">
+          <img src="${photo}" alt="${address}"
+               class="h-[240px] w-full object-cover transition-transform duration-300 group-hover:scale-[1.02]">
+        </div>
+
+        <div class="mt-3">
+          <div class="text-[14px] leading-snug opacity-80">${address}</div>
+          <div class="mt-1 text-[13px] opacity-60">Résidentiel</div>
+          <div class="mt-1 text-[14px] font-semibold">${priceLabel(p.prix)}</div>
+        </div>
+      </article>`;
+    }
+
+    fetch(API)
+      .then(r => r.json())
+      .then(list => {
+        // On prend 4 props (comme ta capture), triées “naturellement”
+        const four = (list || []).slice(0, 4);
+        GRID.innerHTML = four.map(cardTemplate).join('');
+      })
+      .catch(() => {
+        GRID.innerHTML = `
+          <div class="md:col-span-2 text-sm opacity-70">
+            Impossible de charger les propriétés pour le moment.
+          </div>`;
+      });
+  })();
+</script>

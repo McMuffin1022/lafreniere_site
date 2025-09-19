@@ -1,0 +1,75 @@
+<!-- path: core/templates/partials/home_properties_grid.html -->
+<section class="mx-auto max-w-7xl px-6 py-12">
+  <!-- Titre + CTA -->
+  <div class="mb-6 flex items-end justify-between">
+    <h2 class="font-poppins text-[42px] font-semibold text-[#322D29]">
+  Nos propriétés
+</h2>
+    <a href="/properties/" class="text-[22px] font-medium text-secondary hover:underline">Voir toutes</a>
+  </div>
+
+  <!-- Grille -->
+  <div id="home-properties-grid"
+       class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+    <!-- Cartes injectées en JS -->
+  </div>
+</section>
+
+<script>
+  (function () {
+    const GRID = document.getElementById('home-properties-grid');
+    const ENDPOINT = "https://lpsep9.n0c.world/centris/get-listings.php";
+
+    const fmtPrice = (v) => {
+      const n = Number.parseInt(v || 0);
+      return `${n.toLocaleString('fr-CA')} $ CAD`;
+    };
+
+    const buildCard = (p) => {
+      const photo = (p.photos && p.photos.split(',')[0]) || "https://via.placeholder.com/640x480?text=Propriete";
+      const addressParts = [p.adresse, p.ville, p.code_postal].filter(Boolean);
+      const address = addressParts.join(", ");
+      const type = p.type || "Résidentiel";
+      const price = fmtPrice(p.prix);
+
+      // Détail: on vise /properties/<id>/
+      const href = `/properties/${encodeURIComponent(p.id)}/`;
+
+      return `
+        <a href="${href}"
+           class="group block rounded-xl transition-shadow hover:shadow-lg active:opacity-60">
+          <img src="${photo}"
+               alt="${address}"
+               loading="lazy"
+               class="h-56 w-full rounded-xl object-cover" />
+          <div class="pt-4 text-neutral-900">
+            <div class="text-[16px] font-semibold mb-0.5">${address}</div>
+            <div class="text-[14px] text-neutral-500 mb-1.5">${type}</div>
+            <div class="text-[16px] font-semibold">${price}</div>
+          </div>
+        </a>
+      `;
+    };
+
+    const render = (list) => {
+      GRID.innerHTML = list.map(buildCard).join('');
+    };
+
+    // Shuffle helper
+    const shuffle = (arr) => {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    };
+
+    // Fetch + render (8 cartes comme dans ton exemple)
+    fetch(ENDPOINT)
+      .then((r) => r.json())
+      .then((data) => render(shuffle(data).slice(0, 8)))
+      .catch(() => {
+        GRID.innerHTML = `<p class="text-neutral-600">Impossible de charger les propriétés pour le moment.</p>`;
+      });
+  })();
+</script>

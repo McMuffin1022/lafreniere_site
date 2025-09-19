@@ -1,0 +1,163 @@
+<!-- path: core/templates/partials/awards_carousel.html -->
+{% load static %}
+
+<section class="mx-auto w-full max-w-7xl px-6 py-10">
+  <h2 class="text-[40px] font-bold leading-tight text-[#322D29]">
+    Nos prix et distinctions
+  </h2>
+
+  <!-- Carrousel auto-défilant -->
+  <div id="awards-container" class="relative mt-4 overflow-hidden">
+    <ul id="awards-track"
+        class="flex items-center select-none will-change-transform"
+        aria-label="Logos de prix et distinctions (défilement automatique)">
+      <!-- Les <li> seront injectés par JS ci-dessous -->
+    </ul>
+  </div>
+</section>
+
+<script>
+/* Carrousel backend + défilement par transform (robuste, sans scrollLeft).
+   - Duplication 2× pour boucle fluide
+   - Pause au survol
+   - Recalcule sur resize
+*/
+(function () {
+  // --- Données injectées par Django ---
+  const SOURCES = [
+    {% for a in awards %}
+      "{{ a.logo.url }}"{% if not forloop.last %},{% endif %}
+    {% endfor %}
+  ];
+  const ALTS = [
+    {% for a in awards %}
+      "{{ a.name|escapejs }}"{% if not forloop.last %},{% endif %}
+    {% endfor %}
+  ];
+
+  if (!SOURCES.length) return;
+
+  // Réglages
+  const SPEED_PX_S  = 60;   // vitesse (px/s)
+  const IMAGE_SIZE  = 120;  // largeur fixe de chaque logo
+  const GAP_PX      = 40;   // écart entre logos
+  const PADDING_PX  = 8;    // padding interne du track
+
+  const container = document.getElementById('awards-container');
+  const track     = document.getElementById('awards-track');
+  if (!container || !track) return;
+
+  // Construit une série d'éléments <li><img/></li> à partir d'une liste de sources
+  function buildSeries(list, alts) {
+    const frag = document.createDocumentFragment();
+    list.forEach((src, i) => {
+      const li  = document.createElement('li');
+      li.className = 'shrink-0';
+      const img = new Image();
+      img.src   = src;
+      img.alt   = (alts && alts[i]) ? alts[i] : 'Distinction';
+      img.loading  = 'lazy';
+      img.decoding = 'async';
+      img.className = 'h-auto object-contain';
+      img.style.width = IMAGE_SIZE + 'px';
+      li.appendChild(img);
+      frag.appendChild(li);
+    });
+    return frag;
+  }
+
+  // Monte le track: 2× la liste pour la boucle
+  function mountTrack() {
+    track.innerHTML = '';
+    track.style.gap     = GAP_PX + 'px';
+    track.style.padding = PADDING_PX + 'px';
+    track.appendChild(buildSeries(SOURCES, ALTS));
+    track.appendChild(buildSeries(SOURCES, ALTS));
+  }
+
+  mountTrack();
+
+  // Mesure la largeur d'un segment (une seule série de logos)
+  function segmentWidthPx() {
+    // La largeur totale du track est 2× la série
+    return track.scrollWidth / 2;
+  }
+
+  let raf = null, lastTs = null, offset = 0, segW = 0;
+
+  // Démarrage après que quelques images soient chargées (garantir une largeur > 0)
+  function waitForWidthThenStart() {
+    segW = segmentWidthPx();
+    if (segW > 0) {
+      start();
+      return;
+    }
+    // Attendre la première image chargée
+    const firstImg = track.querySelector('img');
+    if (firstImg && !firstImg.complete) {
+      firstImg.addEventListener('load', () => {
+        segW = segmentWidthPx();
+        start();
+      }, { once: true });
+    } else {
+      // fallback: tenter plus tard
+      setTimeout(() => {
+        segW = segmentWidthPx();
+        start();
+      }, 150);
+    }
+  }
+
+  function step(ts) {
+    if (lastTs == null) lastTs = ts;
+    const dt = (ts - lastTs) / 1000; // secondes
+    lastTs = ts;
+
+    offset += SPEED_PX_S * dt;
+    if (segW > 0 && offset >= segW) {
+      // boucle: on revient au début du premier segment
+      offset -= segW;
+    }
+
+    // translateX négatif pour aller de droite vers gauche
+    track.style.transform = 'translateX(' + (-offset) + 'px)';
+    raf = requestAnimationFrame(step);
+  }
+
+  function start() {
+    if (!segW) segW = segmentWidthPx();
+    if (segW <= 0) return; // rien à animer tant que la largeur est nulle
+    if (!raf) { lastTs = null; raf = requestAnimationFrame(step); }
+  }
+
+  function stop() {
+    if (raf) { cancelAnimationFrame(raf); raf = null; }
+  }
+
+  // Pause au survol
+  container.addEventListener('mouseenter', stop);
+  container.addEventListener('mouseleave', start);
+
+  // IntersectionObserver: anime seulement quand visible
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach((e) => e.isIntersecting ? start() : stop());
+  }, { threshold: 0.1 });
+  io.observe(container);
+
+  // Rebuild au resize (recalcule la largeur du segment)
+  let t;
+  window.addEventListener('resize', () => {
+    clearTimeout(t);
+    t = setTimeout(() => {
+      stop();
+      offset = 0;
+      track.style.transform = 'translateX(0px)';
+      segW = segmentWidthPx();
+      start();
+    }, 150);
+  });
+
+  // Lancer après build + mesure
+  waitForWidthThenStart();
+})();
+</script>

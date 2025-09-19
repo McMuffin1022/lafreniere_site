@@ -1,0 +1,150 @@
+<!-- path: core/templates/invest.html -->
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Investir — Opportunités commerciales à Québec{% endblock %}
+
+{% block content %}
+{% include "navbar_black.html" %}
+
+<section class="mx-auto max-w-7xl px-6 py-10 text-[#322D29]">
+
+  <!-- Bloc 1 : Titre + texte / Image -->
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-start">
+    <div>
+      <h1 class="text-[42px] font-semibold leading-tight">
+        Opportunités<br>commerciales à<br>Québec
+      </h1>
+
+      <p class="mt-5 text-[16px] leading-relaxed">
+        J’ai eu la chance de grandir aux côtés de mes parents, qui ont su bâtir un parc immobilier solide à Québec depuis plus
+        de 35 ans. Inspiré par leur parcours, je suis aujourd’hui propriétaire et gestionnaire d’immeubles résidentiels,
+        commerciaux et industriels.
+      </p>
+
+      <p class="mt-4 text-[16px] leading-relaxed">
+        Je me spécialise dans l’optimisation des actifs immobiliers à revenus, et je mets mon expertise au service des
+        investisseurs. Que ce soit pour vendre, acheter ou louer un immeuble commercial, je suis là pour vous accompagner
+        stratégiquement à chaque étape.
+      </p>
+    </div>
+
+<div class="order-first md:order-none">
+  <picture>
+    <!-- AVIF -->
+    <source srcset="{% static 'assets/img/office-glass.avif' %}" type="image/avif">
+    <!-- WebP -->
+    <source srcset="{% static 'assets/img/office-glass.webp' %}" type="image/webp">
+    <!-- Fallback JPG -->
+    <img src="{% static 'assets/img/office-glass.jpg' %}" 
+         alt="Bureaux vitrés modernes"
+         class="w-full h-auto rounded-2xl object-cover shadow-sm">
+  </picture>
+</div>
+
+  </div>
+
+  <!-- Bloc 2 : Image / Formulaire -->
+  <div class="mt-14 grid grid-cols-1 md:grid-cols-2 gap-10 items-start">
+    <div>
+      <img src="{% static 'assets/img/simon-handshake.jpg' %}" alt="Simon Lafrenière"
+           class="w-full h-auto rounded-2xl object-cover shadow-sm">
+    </div>
+
+    <div>
+      <h2 class="text-[42px] font-semibold leading-tight">
+        Parlez-nous de votre<br>projet commercial
+      </h2>
+      <p class="mt-2 text-[16px]">
+        Nous vous aidons à trouver, louer ou acquérir la propriété commerciale qui répond à vos objectifs.
+      </p>
+
+      <form id="invest-form" action="{% url 'invest_contact_submit' %}" method="post" class="mt-5 space-y-3">
+        {% csrf_token %}
+        <div>
+          <label for="inv_name" class="sr-only">Nom</label>
+          <input id="inv_name" name="name" type="text" required
+                 class="w-full rounded-lg border border-black/10 bg-white px-4 py-3 text-[16px] outline-none focus:ring-2 focus:ring-secondary"
+                 placeholder="votre nom">
+        </div>
+        <div>
+          <label for="inv_email" class="sr-only">Courriel</label>
+          <input id="inv_email" name="email" type="email" required
+                 class="w-full rounded-lg border border-black/10 bg-white px-4 py-3 text-[16px] outline-none focus:ring-2 focus:ring-secondary"
+                 placeholder="votre courriel">
+        </div>
+        <div>
+          <label for="inv_phone" class="sr-only">Numéro de téléphone</label>
+          <input id="inv_phone" name="phone" type="tel"
+                 class="w-full rounded-lg border border-black/10 bg-white px-4 py-3 text-[16px] outline-none focus:ring-2 focus:ring-secondary"
+                 placeholder="votre numéro de téléphone">
+        </div>
+        <div>
+          <label for="inv_message" class="sr-only">Message</label>
+          <textarea id="inv_message" name="message" rows="5" required
+                    class="w-full rounded-lg border border-black/10 bg-white px-4 py-3 text-[16px] outline-none focus:ring-2 focus:ring-secondary"
+                    placeholder="votre message"></textarea>
+        </div>
+
+        <button id="invest-submit" type="submit"
+                class="inline-flex w-full items-center justify-center rounded-lg bg-[#005B9E] px-5 py-3 text-[16px] font-semibold text-white hover:opacity-95 disabled:opacity-60">
+          <span class="inline-flex items-center gap-2">
+            <svg id="invest-spinner" class="hidden h-5 w-5 animate-spin" viewBox="0 0 24 24" fill="none">
+              <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+              <path class="opacity-75" d="M4 12a8 8 0 018-8v4" stroke="currentColor" stroke-width="4" stroke-linecap="round"></path>
+            </svg>
+            Envoyer
+          </span>
+        </button>
+
+        <div class="text-center pt-2 text-[16px]">
+          ou téléphonez au <a href="tel:+14186273333" class="font-bold text-[#005B9E]">418–627–3333</a>
+        </div>
+      </form>
+
+      <!-- Toast -->
+      <div id="invest-toast"
+           class="pointer-events-none fixed bottom-6 right-6 z-50 hidden rounded-lg bg-black/80 px-4 py-3 text-white shadow-lg">
+        <span id="invest-toast-text" class="text-sm"></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+{% include "partials/newsletter_banner.html" %}
+{% include "footer.html" %}
+
+<script>
+  (function () {
+    const form    = document.getElementById('invest-form');
+    const btn     = document.getElementById('invest-submit');
+    const spinner = document.getElementById('invest-spinner');
+    const toast   = document.getElementById('invest-toast');
+    const toastT  = document.getElementById('invest-toast-text');
+
+    function showToast(msg){ toastT.textContent = msg; toast.classList.remove('hidden'); setTimeout(()=>toast.classList.add('hidden'), 2800); }
+    function getCsrf(){
+      const name='csrftoken='; const parts=document.cookie.split(';');
+      for (let c of parts){ c=c.trim(); if (c.startsWith(name)) return decodeURIComponent(c.slice(name.length)); }
+      return '';
+    }
+
+    form.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      btn.disabled = true; spinner.classList.remove('hidden');
+
+      try{
+        const res = await fetch(form.action, {
+          method: 'POST',
+          headers: {'X-CSRFToken': getCsrf(), 'X-Requested-With':'XMLHttpRequest'},
+          body: new FormData(form)
+        });
+        const json = await res.json();
+        if (json.success){ form.reset(); showToast('Merci! Nous vous recontacterons rapidement.'); }
+        else { showToast(json.error || 'Une erreur est survenue.'); }
+      }catch(_){ showToast("Impossible d'envoyer le message pour le moment."); }
+      finally{ btn.disabled = false; spinner.classList.add('hidden'); }
+    });
+  })();
+</script>
+{% endblock %}

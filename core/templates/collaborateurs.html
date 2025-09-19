@@ -1,0 +1,64 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}Collaborateurs{% endblock %}
+
+{% block content %}
+  {% include "navbar_black.html" %}
+
+  <section class="max-w-7xl mx-auto px-6 py-16 text-[#322D29]">
+    <h2 class="text-center font-poppins text-[42px] font-semibold mb-4">
+      Nos collaborateurs
+    </h2>
+    <p class="text-center text-gray-600 max-w-3xl mx-auto mb-12">
+      Acheter ou vendre une propriété est un moment clé et vous devez pouvoir compter sur une équipe
+      engagée, professionnelle et à l’écoute, prête à tout mettre en œuvre pour répondre à vos attentes.
+    </p>
+
+    <!-- Courtiers -->
+    {% if agents_courtiers %}
+      <h3 class="text-[22px] font-medium text-secondary hover:underline mb-8">Nos courtiers immobiliers</h3>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-12 text-center mb-16">
+        {% for a in agents_courtiers %}
+          <div>
+            <img
+              src="{{ a.photo.url|default:'' }}"
+              onerror="this.src='{% static 'assets/placeholder.png' %}'"
+              alt="{{ a.name }}"
+              loading="lazy"
+              class="mx-auto aspect-square w-48 sm:w-56 lg:w-64 object-cover rounded-full border-2 border-black/10 grayscale hover:grayscale-0 transition duration-300 ease-in-out shadow-sm"
+            >
+            <h4 class="mt-4 text-[18px] font-semibold">{{ a.name }}</h4>
+            <p class="text-sm text-gray-600">{{ a.title }}</p>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    <!-- Adjointes -->
+    {% if agents_adjointes %}
+      <h3 class="text-[22px] font-medium text-secondary hover:underline mb-8">Nos adjointes</h3>
+      <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-12 text-center">
+        {% for a in agents_adjointes %}
+          <div>
+            <img
+              src="{{ a.photo.url|default:'' }}"
+              onerror="this.src='{% static 'assets/placeholder.png' %}'"
+              alt="{{ a.name }}"
+              loading="lazy"
+              class="mx-auto aspect-square w-48 sm:w-56 lg:w-64 object-cover rounded-full border-2 border-black/10 grayscale hover:grayscale-0 transition duration-300 ease-in-out shadow-sm"
+            >
+            <h4 class="mt-4 text-[18px] font-semibold">{{ a.name }}</h4>
+            <p class="text-sm text-gray-600">{{ a.title }}</p>
+          </div>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {% if not agents_courtiers and not agents_adjointes %}
+      <p class="text-center text-gray-600">Aucun collaborateur pour le moment.</p>
+    {% endif %}
+  </section>
+
+  {% include "footer.html" %}
+{% endblock %}
